@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appropriate Technology & Sustainability Quiz</title>
+    <style>
+        :root {
+            /* Dark Mode (Default) - Deep Space & Neon */
+            --bg-grad-1: #0f172a;
+            --bg-grad-2: #1e1b4b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --hover-overlay: rgba(255, 255, 255, 0.05);
+            --btn-text: #ffffff;
+        }
+
+        .light-mode {
+            /* Light Mode - Frosted Glass & Vibrant */
+            --bg-grad-1: #f1f5f9;
+            --bg-grad-2: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --accent-cyan: #0284c7;
+            --accent-purple: #6d28d9;
+            --hover-overlay: rgba(0, 0, 0, 0.05);
+            --btn-text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation Bar */
+        nav {
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .icon-btn:hover {
+            background: var(--hover-overlay);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            width: 100%;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--btn-text);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+        .btn-secondary:hover {
+            background: var(--hover-overlay);
+        }
+
+        /* Quiz UI Elements */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .timer-badge {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .timer-badge.paused {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .light-mode .progress-bar-container { background: rgba(0, 0, 0, 0.1); }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--hover-overlay);
+            border-color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .option-btn.wrong {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .explanation-box {
+            display: none;
+            background: rgba(6, 182, 212, 0.05);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .explanation-box.show {
+            display: block;
+        }
+
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--card-border);
+            padding-top: 1.5rem;
+        }
+
+        .quote-box {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex: 1;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        /* Results & Review */
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent-cyan) 0%, transparent 0%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            background: var(--card-bg);
+            border-radius: 50%;
+        }
+        .score-text {
+            position: relative;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .performance-msg {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .performance-expert { color: var(--accent-purple); }
+        .performance-strong { color: var(--success-color); }
+        .performance-average { color: #f59e0b; }
+        .performance-poor { color: var(--danger-color); }
+
+        .review-list {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .review-item {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: rgba(0,0,0,0.2);
+        }
+        .light-mode .review-item { background: rgba(255,255,255,0.5); }
+        
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .badge-correct { background: var(--success-color); color: white; }
+        .badge-wrong { background: var(--danger-color); color: white; }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .quiz-footer { flex-direction: column; gap: 1rem; }
+            .quote-box { order: -1; margin-bottom: 1rem; }
+            .btn { width: 100%; }
+            nav { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">EcoTech Quiz</div>
+        <div class="controls">
+            <button class="icon-btn" id="btn-sound" title="Toggle Sound">
+                <!-- Sound On Icon -->
+                <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </button>
+            <button class="icon-btn" id="btn-theme" title="Toggle Theme">
+                <!-- Sun Icon -->
+                <svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- Welcome Screen -->
+        <div id="screen-welcome" class="screen glass-card active">
+            <h1>Sustainability Lessons from Appropriate Technology</h1>
+            <p>Test your knowledge on the evolution, impacts, and future of appropriate technology based on Catherine P. Bishop's research.</p>
+            <ul style="margin-bottom: 2rem; color: var(--text-secondary); padding-left: 1.5rem; line-height: 1.8;">
+                <li><strong>60 Questions</strong> covering history, concepts, and case studies.</li>
+                <li><strong>45 Minutes</strong> time limit.</li>
+                <li>Instant feedback and detailed explanations.</li>
+            </ul>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-primary" id="btn-start">Start New Quiz</button>
+                <button class="btn btn-secondary" id="btn-resume" style="display:none;">Resume Saved Quiz</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="screen-quiz" class="screen glass-card">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="quiz-header">
+                <span id="question-tracker">Question 1 of 60</span>
+                <div class="timer-badge" id="timer-display">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <span id="time-text">45:00</span>
+                    <button id="btn-pause" style="background:none; border:none; color:inherit; cursor:pointer; margin-left:5px;" title="Pause/Resume">⏸</button>
+                </div>
+            </div>
+
+            <div class="question-text" id="question-text">Loading question...</div>
+            
+            <div class="options-grid" id="options-container">
+                <!-- Options injected via JS -->
+            </div>
+
+            <div class="explanation-box" id="explanation-box">
+                <strong>Explanation:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="quiz-footer">
+                <button class="btn btn-secondary" id="btn-prev" disabled>Previous</button>
+                <div class="quote-box" id="quote-text">"Innovation distinguishes between a leader and a follower."</div>
+                <button class="btn btn-primary" id="btn-next">Next</button>
+                <button class="btn btn-primary" id="btn-submit" style="display:none; background: var(--success-color);">Submit Quiz</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="screen-results" class="screen glass-card">
+            <h2 style="text-align: center;">Quiz Completed!</h2>
+            <div class="score-circle" id="score-circle">
+                <span class="score-text" id="score-text">0%</span>
+            </div>
+            <div class="performance-msg" id="performance-msg">Evaluating...</div>
+            <p style="text-align: center; font-size: 1.1rem; margin-bottom: 2rem;">You answered <span id="correct-count">0</span> out of 60 questions correctly.</p>
+            
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="btn-review">Review Answers</button>
+                <button class="btn btn-secondary" id="btn-retake">Retake Quiz</button>
+            </div>
+        </div>
+
+        <!-- Review Screen -->
+        <div id="screen-review" class="screen glass-card">
+            <h2>Detailed Review</h2>
+            <button class="btn btn-secondary" id="btn-back-results" style="margin-bottom: 1.5rem;">Back to Results</button>
+            <div class="review-list" id="review-container">
+                <!-- Review items injected via JS -->
+            </div>
+            <button class="btn btn-secondary" onclick="window.scrollTo(0,0)" style="margin-top: 2rem; width: 100%;">Back to Top</button>
+        </div>
+
+    </div>
+
+<script>
+/**
+ * 60 Questions array based strictly on the provided PDF text.
+ * Mix of Easy (20), Medium (25), Hard (15).
+ */
+const rawQuestions = [
+    // --- EASY (20) ---
+    { q: "What was a guiding principle of international relations since the end of World War II according to the text?", o: ["Technological supremacy", "Economic development and poverty alleviation", "Military expansion", "Global environmental conservation"], a: "Economic development and poverty alleviation", exp: "Economic development and poverty alleviation have served as guiding principles of international relations since the end of World War II.", d: "Easy" },
+    { q: "In what decade did the concept of appropriate technology originally emerge?", o: ["1940s", "1950s", "1960s", "1980s"], a: "1960s", exp: "The concept of appropriate technology emerged in the 1960s after observers noted the failure of direct industrial transfers.", d: "Easy" },
+    { q: "Who authored the book 'Small is Beautiful'?", o: ["Catherine P. Bishop", "E.F. Schumacher", "John Tharakan", "Gro Harlem Brundtland"], a: "E.F. Schumacher", exp: "E.F. Schumacher wrote 'Small Is Beautiful: A Study of Economics as if People Mattered' (1973).", d: "Easy" },
+    { q: "E.F. Schumacher famously depicted appropriate technology as technology with...", o: ["A human face", "A global reach", "Minimal cost", "Maximum output"], a: "A human face", exp: "Schumacher's inspiring depiction of 'technology with a human face' served as an anthropocentric basis for determining what 'appropriate' might mean.", d: "Easy" },
+    { q: "What movement quickly peaked and then largely disappeared from public forums in the mid-1980s?", o: ["The Green Revolution", "The Appropriate Technology Movement", "The Information Age", "The Neoliberal Era"], a: "The Appropriate Technology Movement", exp: "Many critics insisted that the AT movement quickly peaked and then disappeared in the mid-1980s.", d: "Easy" },
+    { q: "What economic policy era in the 1980s was characterized by a lack of interest in alternative technologies?", o: ["Keynesianism", "Reaganomics", "The New Deal", "Mercantilism"], a: "Reaganomics", exp: "The mid-1980s was the beginning of the period of 'Reaganomics' characterized by neoliberal policy and a blatant lack of interest in energy conservation.", d: "Easy" },
+    { q: "Which term emerged in 1987 as development that 'meets the needs of the present without compromising the ability of future generations'?", o: ["Appropriate Technology", "Microfinance", "Sustainable Development", "Frugal Innovation"], a: "Sustainable Development", exp: "In 1987, the Brundtland Report formally defined sustainable development with this exact phrase.", d: "Easy" },
+    { q: "The Kenya 'jiko' stove was designed to burn what type of fuel more efficiently?", o: ["Natural Gas", "Wood and Charcoal", "Coal", "Solar Energy"], a: "Wood and Charcoal", exp: "The jiko stove burns charcoal in a ceramic liner surrounded by metal cladding.", d: "Easy" },
+    { q: "What does the Grameen Shakti organization primarily provide?", o: ["Microloans for farming", "Solar energy systems and biogas digesters", "Water purification tablets", "Treadle pumps"], a: "Solar energy systems and biogas digesters", exp: "Founded in 1996, Grameen Shakti delivers solar energy systems, biogas digesters, and improved cookstoves.", d: "Easy" },
+    { q: "What does ORS stand for in the context of the public health sector?", o: ["Optimal Recovery System", "Oral Rehydration Salts", "Organic Resource Sustainability", "Operational Relief Strategy"], a: "Oral Rehydration Salts", exp: "Oral rehydration salts (ORS) is an appropriate technology innovated in the public health sector.", d: "Easy" },
+    { q: "What disease epidemics in Bangladesh in the late 1960s prompted the development of ORS?", o: ["Malaria", "Cholera", "Tuberculosis", "Ebola"], a: "Cholera", exp: "The treatment was first developed in Bangladesh in the late 1960s for victims of a series of catastrophic cholera epidemics.", d: "Easy" },
+    { q: "Treadle pumps are powered by what?", o: ["Solar energy", "Human power", "Diesel engines", "Biogas"], a: "Human power", exp: "Human-powered treadle pumps for irrigation save time and labor compared to manual watering.", d: "Easy" },
+    { q: "What is a major advantage of the treadle pump mentioned in the text?", o: ["It purifies drinking water", "It generates electricity", "It requires no fuel", "It prevents deforestation"], a: "It requires no fuel", exp: "The pumps require no fuel thereby reducing biofuel energy consumption and pollution.", d: "Easy" },
+    { q: "Appropriate technology was designed to empower individuals and communities at what level?", o: ["International", "National", "Regional", "Local"], a: "Local", exp: "Tharakan's definition states AT seeks to empower individuals and communities at the local level.", d: "Easy" },
+    { q: "Before 'sustainable development' became a global term, what concept was considered a key element to achieve it?", o: ["Direct technology transfer", "Macroeconomic growth", "Appropriate technology", "Microfinance"], a: "Appropriate technology", exp: "Appropriate technology was for several decades considered a key element in the quest for sustainable development even before the term was used in the global arena.", d: "Easy" },
+    { q: "Which of the following is an example of 'frugal innovation' mentioned as an extension of appropriate technology?", o: ["High-speed rail", "Low-cost open source ultrasound for the visually impaired", "Nuclear energy plants", "Industrial palm oil factories"], a: "Low-cost open source ultrasound for the visually impaired", exp: "Petsiuk & Pearce (2019) is cited for low-cost open source ultrasound-sensing as a frugal innovation.", d: "Easy" },
+    { q: "The text defines sustainable development as having merged economic and environmental factors to stimulate what?", o: ["Grassroots democracy", "Processes of capital growth", "Immediate poverty elimination", "Total resource preservation"], a: "Processes of capital growth", exp: "Sustainable development is described as a dominant global discourse centered on merging economic and environmental factors to stimulate processes of capital growth.", d: "Easy" },
+    { q: "Where was the National Center for Appropriate Technology established in the 1970s?", o: ["United Kingdom", "United States", "Ghana", "Bangladesh"], a: "United States", exp: "The National Center for Appropriate Technology was established in the 1970s specifically to meet the needs of low-income communities in the United States.", d: "Easy" },
+    { q: "What global framework further enumerated and reinforced the elements of sustainability in 2015?", o: ["The Kyoto Protocol", "The Paris Agreement", "Agenda 2030 Sustainable Development Goals", "The Brundtland Report"], a: "Agenda 2030 Sustainable Development Goals", exp: "These elements of sustainability were further enumerated and reinforced in 2015 with the Agenda 2030 Sustainable Development Goals.", d: "Easy" },
+    { q: "Which potent greenhouse gas may escape into the atmosphere from poorly managed biogas digesters?", o: ["Carbon Monoxide", "Methane", "Ozone", "Nitrous Oxide"], a: "Methane", exp: "Potent greenhouse gas methane may escape into the atmosphere as well as ammonia and sulphur dioxide during operation.", d: "Easy" },
+
+    // --- MEDIUM (25) ---
+    { q: "Why did the direct transfer of the means of industrial production to emerging nations often fail?", o: ["It lacked sufficient capital funding", "It ignored consumerism, waste, and social/environmental degradation", "It was actively blocked by local governments", "It was too labor-intensive"], a: "It ignored consumerism, waste, and social/environmental degradation", exp: "Programs of modernization and industrialization failed to grapple with consumerism, waste, and social and environmental degradation.", d: "Medium" },
+    { q: "What was a problematic aspect of defining 'appropriateness' in the 1970s and 1980s?", o: ["Criteria were often established in Western capitals far from local users", "The criteria strictly required digital components", "Criteria only focused on large-scale industries", "Local communities rejected any form of criteria"], a: "Criteria were often established in Western capitals far from local users", exp: "The criteria for determining whether a technology was or was not appropriate was often established in London, Washington, D.C., or Rome.", d: "Medium" },
+    { q: "Which development discourse emerged in the late 1980s that obscured and rejected appropriate technology?", o: ["Grassroots innovation", "Microenterprise and microfinance", "ICT for Development", "Frugal innovation"], a: "Microenterprise and microfinance", exp: "A new discourse of development emerged... as policy-making shifted to development of microenterprises and soon after, microfinance.", d: "Medium" },
+    { q: "How did early appropriate technology practitioners primarily view 'sustainability'?", o: ["Strictly as zero-carbon emissions", "As the capacity for local production/consumption without external assistance", "As the ability to attract continuous foreign aid", "As the creation of high-tech monopolies"], a: "As the capacity for local production/consumption without external subsidies", exp: "Sustainability was linked to the capacity of local populations to produce and consume the technology without external assistance.", d: "Medium" },
+    { q: "What is a major limitation of current research on frugal and constraint-based innovations according to the text?", o: ["It focuses too much on history", "It lacks a sufficient base of empirical evidence on ecological impacts", "It only studies innovations in Europe", "It refuses to use the term 'sustainability'"], a: "It lacks a sufficient base of empirical evidence on ecological impacts", exp: "Authors claim that 'current research lacks a sufficient base of empirical evidence on the economic, social, and ecological impacts of frugal innovations'.", d: "Medium" },
+    { q: "Despite household-level benefits, what has the jiko stove failed to do?", o: ["Cook food faster than open fires", "Reduce household charcoal purchases", "Induce a substantive decline in national deforestation or global emissions", "Use locally sourced materials"], a: "Induce a substantive decline in national deforestation or global emissions", exp: "There is little evidence to claim that jiko stoves have induced a substantive decline in biomass consumption, deforestation, or greenhouse gas emissions at national or regional scales.", d: "Medium" },
+    { q: "What biological process does the biogas technology promoted by Grameen Shakti use?", o: ["Photosynthesis", "Aerobic respiration", "Anaerobic digestion", "Thermal depolymerization"], a: "Anaerobic digestion", exp: "The biogas technology uses the process of anaerobic digestion to transform locally sourced green waste... into household fuel.", d: "Medium" },
+    { q: "By 1984, how many packets of ORS were produced and distributed annually?", o: ["8 million", "80 million", "500 million", "1 billion"], a: "80 million", exp: "By 1984, 80 million packets of ORS were produced and distributed annually by international development institutions.", d: "Medium" },
+    { q: "While treadle pumps save labor and increase crop production, what unintended negative environmental impact can they cause?", o: ["Soil acidification", "Ground water depletion", "Deforestation", "Air pollution"], a: "Ground water depletion", exp: "The pumps require no fuel... however overuse depletes ground water.", d: "Medium" },
+    { q: "What unintended environmental consequence resulted from the diffusion of small-scale mechanized palm oil expellers in Africa?", o: ["Increased greenhouse gas emissions from fuel", "Runoff of processing wastes into streams and rivers", "Deforestation to build the machines", "Depletion of the ozone layer"], a: "Runoff of processing wastes into streams and rivers", exp: "May also increase the runoff of processing wastes into streams and rivers thereby jeopardizing environmental sustainability.", d: "Medium" },
+    { q: "To achieve sustainable entrepreneurship, a recent analysis suggested that the 'triple bottom line' should be integrated:", o: ["Simultaneously", "Sequentially", "Randomly", "Exclusively"], a: "Sequentially", exp: "A 'triple bottom line' of social, economic, and ecological gains... should be integrated sequentially, rather than simultaneously.", d: "Medium" },
+    { q: "Frugal innovation is often geared towards consumers living on less than what amount per day?", o: ["$1.00", "$2.00", "$5.00", "$10.00"], a: "$2.00", exp: "Frugal innovation is often geared to consumers living on less than USD 2.00 per day.", d: "Medium" },
+    { q: "The 'semantic tangle' of defining 'appropriateness' has been replaced by modern engineers with a more straightforward focus on what?", o: ["Aesthetic design", "Profit maximization", "User control", "Global scalability"], a: "User control", exp: "The conceptual and semantic tangle... has been replaced with a more straightforward focus on control on the part of the user.", d: "Medium" },
+    { q: "John Tharakan's 2010 definition of appropriate technology was criticized for doing what?", o: ["Being too focused on software", "Reinforcing North/South patterns of political dominance by targeting 'developing' communities", "Ignoring environmental concerns completely", "Relying too heavily on corporate subsidies"], a: "Reinforcing North/South patterns of political dominance by targeting 'developing' communities", exp: "The drawback of Tharakan's definition is the idea that only 'developing' communities are intended consumers... reinforcing North/South dominance.", d: "Medium" },
+    { q: "Where is the Technology Consultancy Centre of Kwame Nkrumah University of Science and Technology located?", o: ["Kenya", "United States", "Ghana", "Bangladesh"], a: "Ghana", exp: "In Ghana the Technology Consultancy Centre of Kwame Nkrumah University of Science and Technology emerged in response to the needs of local small-scale industries.", d: "Medium" },
+    { q: "What is considered arguably the most cost-effective medical treatment known?", o: ["Intravenous fluid therapy", "Antibiotic regimes for cholera", "Oral rehydration salts (ORS)", "Ultrasound screening"], a: "Oral rehydration salts (ORS)", exp: "Currently, the use of ORS 'represents the most cost-effective medical treatment known'.", d: "Medium" },
+    { q: "Despite being a high-impact technology, what percentage of diarrhea victims worldwide actually receive ORS treatment compared to the 80% goal?", o: ["10%", "30%", "50%", "70%"], a: "30%", exp: "Only 30% of victims of diarrhea cases worldwide receive treatment rather than the 80% goal for global uptake.", d: "Medium" },
+    { q: "Innovations like the Kenya jiko stove provide material evidence of what kind of sustainability due to their persistence over decades?", o: ["Social and economic sustainability", "Global environmental sustainability", "Corporate sustainability", "Macroeconomic sustainability"], a: "Social and economic sustainability", exp: "The long-term viability of the innovations provides material evidence of social and economic sustainability...", d: "Medium" },
+    { q: "What movement is based on the skills of computer programmers innovating IT applications for specific needs in diverse sectors?", o: ["The Open Source Hardware Movement", "The Information and Communication Technology for Development (ICT4D) movement", "The Global Digital Divide Initiative", "The Neoliberal Tech Agenda"], a: "The Information and Communication Technology for Development (ICT4D) movement", exp: "The Information and Communication Technology for Development movement is based on the skills and interests of computer programmers...", d: "Medium" },
+    { q: "Why did early appropriate technology innovators often fail regarding business development?", o: ["They focused exclusively on design and manufacture, ignoring marketing", "They charged too much for the products", "They only sold to governments", "They lacked patents"], a: "They focused exclusively on design and manufacture, ignoring marketing", exp: "Many innovators... focused almost exclusively on design and manufacture, paying little attention to promotion, marketing, and business development.", d: "Medium" },
+    { q: "What feature of Grameen Shakti’s biogas system design led to its successful diffusion?", o: ["Its reliance on imported parts", "Its intentional reduction in complexity to simplify repairs", "Its use of advanced digital monitoring", "Its complete automation"], a: "Its intentional reduction in complexity to simplify repairs", exp: "The design of the system was intentionally reduced in complexity in order to simplify repairs and maintenance and this has led to successful diffusion.", d: "Medium" },
+    { q: "How does the text describe the nature of 'sustainable development' as a global discourse?", o: ["A highly structured and measurable program", "A set of strict evaluative indicators", "A discourse merging economic/environmental factors to stimulate capital growth", "A purely ecological conservation strategy"], a: "A discourse merging economic/environmental factors to stimulate capital growth", exp: "Sustainable development is not a structured program... but is, rather, a dominant global discourse centered on merging economic and environmental factors to stimulate processes of capital growth.", d: "Medium" },
+    { q: "In the 1970s and 1980s, the idealism of appropriate technology engineers led to naïveté regarding what?", o: ["The laws of thermodynamics", "The complexities of innovation and diffusion in cross-cultural milieus", "The cost of raw materials", "The availability of fossil fuels"], a: "The complexities of innovation and diffusion in cross-cultural milieus", exp: "The idealism of appropriate technology engineers in the 1970s and 1980s led to naïveté with regard to the complexities of innovation and diffusion, particularly in cross-cultural milieus.", d: "Medium" },
+    { q: "Which medical journal declared ORS potentially 'the most important medical advance' of the 20th century in 1978?", o: ["The New England Journal of Medicine", "The Lancet", "Journal of the American Medical Association", "Nature Medicine"], a: "The Lancet", exp: "As early as 1978, the British medical journal The Lancet, declared ORS potentially 'the most important medical advance'...", d: "Medium" },
+    { q: "Current studies emphasize that for appropriate technology to succeed, it must be culturally appropriate, affordable, and perceived as what?", o: ["Traditional", "Foreign", "Modern or up-to-date", "Temporary"], a: "Modern or up-to-date", exp: "Technology must be culturally appropriate, affordable, and perceived as modern or up-to-date in order to appeal to consumers.", d: "Medium" },
+
+    // --- HARD (15) ---
+    { q: "What constitutes a major gap in current knowledge regarding the sustainability of appropriate technologies?", o: ["Lack of short-term economic data", "The dearth of longitudinal studies evaluating long-term environmental impacts", "Insufficient patents filed in developing nations", "Lack of theoretical frameworks"], a: "The dearth of longitudinal studies evaluating long-term environmental impacts", exp: "The dearth of longitudinal studies of the sustainability of appropriate technologies constitutes a major gap in knowledge.", d: "Hard" },
+    { q: "The inability to link household-level environmental benefits of stoves/ORS to global/national scale impacts is an example of what concept?", o: ["The tragedy of the commons", "The ecological fallacy", "The rebound effect", "The butterfly effect"], a: "The ecological fallacy", exp: "A determination of the sustainability of ORS is hampered by the ecological fallacy whereby positive environmental impacts at the individual and household levels do not translate to benefits at greater scales.", d: "Hard" },
+    { q: "Why is an emphasis on 'sequential' rather than 'simultaneous' triple bottom line integration beneficial for technology diffusion?", o: ["It guarantees immediate environmental preservation", "It reduces the complexity of meeting market demands during early enterprise development", "It completely eliminates the need for economic profit", "It allows foreign corporations to maintain control"], a: "It reduces the complexity of meeting market demands during early enterprise development", exp: "It may not be possible to achieve all three elements at the same time and therefore sequential attainment reduces the complexity of meeting market demands.", d: "Hard" },
+    { q: "How did the proliferation of 'refined definitions' (like frugal or constraint-based innovation) serve institutional actors?", o: ["It simplified the engineering process", "It helped particular actors and institutions stake claims in the field of sustainable development", "It united the global North and South in a single paradigm", "It proved that appropriate technology was dead"], a: "It helped particular actors and institutions stake claims in the field of sustainable development", exp: "This proliferation of refined definitions... helps particular actors and institutions to stake claims in the field of sustainable development.", d: "Hard" },
+    { q: "By insisting on the key role of local manufacturers and consumers, what theoretical stance does the appropriate technology strategy arguably take?", o: ["Neocolonial", "Hyper-capitalist", "Postcolonial", "Authoritarian"], a: "Postcolonial", exp: "Insisting on the key role of local manufacturers and consumers, the appropriate technology strategy takes an arguably postcolonial stance.", d: "Hard" },
+    { q: "The text argues that determining sustainability of appropriate technology requires empirical data regarding what specific processes?", o: ["Processes of patent acquisition and copyright law", "Processes of adoption and diffusion over space and time", "Processes of digital marketing and SEO", "Processes of macro-level foreign direct investment"], a: "Processes of adoption and diffusion over space and time", exp: "To determine the sustainability of appropriate... technologies requires empirical data with regard to processes of adoption and diffusion over space and time.", d: "Hard" },
+    { q: "Appropriate technology discourse is described as a way of apprehending the world that rests on what?", o: ["Mathematical certainty and rigid laws", "Assumptions, judgments, and contentions to provide basic terms of analysis", "Strict biological imperatives", "Incontrovertible historical facts"], a: "Assumptions, judgments, and contentions to provide basic terms of analysis", exp: "Appropriate technology emerged as a particular discourse: a way of apprehending and communicating... that rests on assumptions, judgments, and contentions.", d: "Hard" },
+    { q: "What does the text suggest innovators should avoid doing to ensure ethical and sustainable design?", o: ["Designing with an understanding of local culture", "Designing based on market demands", "Designing with a paternalistic 'need to help' mentality", "Designing simple, repairable machines"], a: "Designing with a paternalistic 'need to help' mentality", exp: "Rather than designing with a 'need to help' [4], engineers and innovators need to identify and respond to consumer needs in particular markets.", d: "Hard" },
+    { q: "Why might subtle, incremental transformations make environmental sustainability difficult to measure?", o: ["They happen too quickly to record", "They cannot be identified within the shorter timeframes of most current studies", "They only occur in computerized systems", "They are deliberately hidden by governments"], a: "They cannot be identified within the shorter timeframes of most current studies", exp: "Environmental processes may undergo subtle, incremental transformations that are difficult to identify within shorter timeframes.", d: "Hard" },
+    { q: "Which of the following is NOT listed as a contemporary category or iteration of the 'right' model of technology for development?", o: ["Frugal innovation", "Constraint-based innovation", "Trickle-down innovation", "Grassroots innovation"], a: "Trickle-down innovation", exp: "Contemporary categories include frugal, constraint-based, grassroots, and responsible innovation. Trickle-down is not mentioned.", d: "Hard" },
+    { q: "How did early engineers' focus on ecological imperatives paradoxically hinder diffusion?", o: ["Their innovations were often not suited to geographically specific cultural or historical contexts", "The technologies were too cheap to produce", "They relied too heavily on microfinance debt", "They caused immediate massive pollution"], a: "Their innovations were often not suited to geographically specific cultural or historical contexts", exp: "Engineers... excelled at creating technologies that could respond to ecological imperatives, but very often their innovations were not suited to geographically specific cultural or historical contexts.", d: "Hard" },
+    { q: "According to the text, why is appropriate technology still highly relevant as a framework for IT development projects?", o: ["Because it maximizes profits for tech giants", "Because it is more ethical and practical than linear, capitalism-oriented modernization theories", "Because it relies entirely on artificial intelligence", "Because it guarantees zero carbon footprint for servers"], a: "Because it is more ethical and practical than linear, capitalism-oriented modernization theories", exp: "The concept of appropriate technology provides a framework for IT development projects that is more ethical and more practical than dominant development theories based on linear processes of capitalism-oriented modernization.", d: "Hard" },
+    { q: "What underlying conflict is presented regarding microfinance in contemporary development strategies?", o: ["It focuses too much on environmental conservation", "It promotes a neoliberal approach that does not necessarily respond to the diverse needs of low-income populations", "It is entirely government-controlled", "It strictly funds only large-scale infrastructure"], a: "It promotes a neoliberal approach that does not necessarily respond to the diverse needs of low-income populations", exp: "The discourse of microfinance... promotes a neoliberal approach to poverty alleviation that does not necessarily respond to the needs of diverse low-income populations and even creates new problems.", d: "Hard" },
+    { q: "The initial promise of modernization via technology transfer tapped into what specific historical euphoria in emerging nations?", o: ["The end of the Cold War", "The achievement of national independence in former colonies", "The invention of the internet", "The discovery of oil reserves"], a: "The achievement of national independence in former colonies", exp: "This promise of modernization tapped into the euphoria of the achievement of national independence in many former colonies.", d: "Hard" },
+    { q: "In the context of the AT movement's evolution, what was the primary reason the 'discourse of development' changed in the 1980s?", o: ["Complete eradication of global poverty", "Shift toward macroeconomic neoliberal policies focusing on national economies rather than alternative technologies", "A universal adoption of solar energy", "The success of the Brundtland report instantly solving environmental issues"], a: "Shift toward macroeconomic neoliberal policies focusing on national economies rather than alternative technologies", exp: "This was the beginning of the period of 'Reaganomics' characterized by neoliberal policy focusing on national economies and a blatant lack of interest in energy conservation.", d: "Hard" }
+];
+
+// Motivational Quotes
+const quotes = [
+    "“Technology with a human face.” - E.F. Schumacher",
+    "“Small is beautiful.” - E.F. Schumacher",
+    "“Innovation distinguishes between a leader and a follower.”",
+    "“Sustainability is no longer about doing less harm. It’s about doing more good.”",
+    "“Empowering individuals at the local level is the key to lasting change.”",
+    "“The best way to predict the future is to design it.”",
+    "“Constraint breeds creativity.”"
+];
+
+// App State
+let state = {
+    questions: [],
+    currentIndex: 0,
+    score: 0,
+    answers: {}, // { index: { selected: string, isCorrect: boolean } }
+    timeLeft: 45 * 60, // 45 minutes in seconds
+    timerInterval: null,
+    isPaused: false,
+    soundEnabled: true,
+    isDarkMode: true
+};
+
+// DOM Elements
+const screens = {
+    welcome: document.getElementById('screen-welcome'),
+    quiz: document.getElementById('screen-quiz'),
+    results: document.getElementById('screen-results'),
+    review: document.getElementById('screen-review')
+};
+
+const UI = {
+    btnStart: document.getElementById('btn-start'),
+    btnResume: document.getElementById('btn-resume'),
+    btnTheme: document.getElementById('btn-theme'),
+    btnSound: document.getElementById('btn-sound'),
+    btnNext: document.getElementById('btn-next'),
+    btnPrev: document.getElementById('btn-prev'),
+    btnSubmit: document.getElementById('btn-submit'),
+    btnPause: document.getElementById('btn-pause'),
+    btnReview: document.getElementById('btn-review'),
+    btnRetake: document.getElementById('btn-retake'),
+    btnBackResults: document.getElementById('btn-back-results'),
+    
+    progressBar: document.getElementById('progress-bar'),
+    questionTracker: document.getElementById('question-tracker'),
+    timeText: document.getElementById('time-text'),
+    timerBadge: document.getElementById('timer-display'),
+    
+    questionText: document.getElementById('question-text'),
+    optionsContainer: document.getElementById('options-container'),
+    explanationBox: document.getElementById('explanation-box'),
+    explanationText: document.getElementById('explanation-text'),
+    quoteText: document.getElementById('quote-text'),
+    
+    scoreCircle: document.getElementById('score-circle'),
+    scoreText: document.getElementById('score-text'),
+    performanceMsg: document.getElementById('performance-msg'),
+    correctCount: document.getElementById('correct-count'),
+    reviewContainer: document.getElementById('review-container')
+};
+
+// Utilities
+const shuffleArray = (array) => {
+    let newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+};
+
+const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+};
+
+// Audio Synthesizer
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const playTone = (freq, type, duration) => {
+    if (!state.soundEnabled) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+};
+const playCorrect = () => { playTone(600, 'sine', 0.1); setTimeout(() => playTone(800, 'sine', 0.2), 100); };
+const playWrong = () => { playTone(300, 'sawtooth', 0.2); setTimeout(() => playTone(200, 'sawtooth', 0.3), 150); };
+
+// Storage
+const saveState = () => localStorage.setItem('ecoQuizState', JSON.stringify(state));
+const loadState = () => {
+    const saved = localStorage.getItem('ecoQuizState');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.timeLeft > 0 && Object.keys(parsed.answers).length < parsed.questions.length) {
+            return parsed;
+        }
+    }
+    return null;
+};
+const clearState = () => localStorage.removeItem('ecoQuizState');
+
+// Navigation
+const showScreen = (screenId) => {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[screenId].classList.add('active');
+    window.scrollTo(0,0);
+};
+
+// Initialization
+const init = () => {
+    const saved = loadState();
+    if (saved) {
+        UI.btnResume.style.display = 'inline-flex';
+    }
+    
+    // Theme setup
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+        state.isDarkMode = false;
+    }
+};
+
+const startQuiz = (resume = false) => {
+    if (resume) {
+        const saved = loadState();
+        if(saved) {
+            state = saved;
+            // Need to clear old interval if any exists
+            clearInterval(state.timerInterval);
+        }
+    } else {
+        // Deep copy and shuffle questions, then shuffle options for each
+        state.questions = shuffleArray(rawQuestions).map(q => ({
+            ...q,
+            options: shuffleArray(q.o)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.answers = {};
+        state.timeLeft = 45 * 60;
+        state.isPaused = false;
+        clearState();
+    }
+    
+    showScreen('quiz');
+    renderQuestion();
+    startTimer();
+    updateQuote();
+};
+
+const renderQuestion = () => {
+    const qIndex = state.currentIndex;
+    const qData = state.questions[qIndex];
+    const isAnswered = !!state.answers[qIndex];
+    
+    // UI Updates
+    UI.questionTracker.innerText = `Question ${qIndex + 1} of ${state.questions.length}`;
+    UI.progressBar.style.width = `${((qIndex + 1) / state.questions.length) * 100}%`;
+    UI.questionText.innerText = qData.q;
+    
+    // Buttons
+    UI.btnPrev.disabled = qIndex === 0;
+    
+    if (qIndex === state.questions.length - 1) {
+        UI.btnNext.style.display = 'none';
+        UI.btnSubmit.style.display = 'inline-flex';
+    } else {
+        UI.btnNext.style.display = 'inline-flex';
+        UI.btnSubmit.style.display = 'none';
+    }
+
+    // Render Options
+    UI.optionsContainer.innerHTML = '';
+    qData.options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        
+        if (isAnswered) {
+            btn.disabled = true;
+            if (opt === qData.a) btn.classList.add('correct');
+            else if (opt === state.answers[qIndex].selected) btn.classList.add('wrong');
+        } else {
+            btn.onclick = () => handleSelectOption(opt, btn);
+        }
+        
+        UI.optionsContainer.appendChild(btn);
+    });
+
+    // Render Explanation
+    if (isAnswered) {
+        UI.explanationText.innerText = qData.exp;
+        UI.explanationBox.classList.add('show');
+    } else {
+        UI.explanationBox.classList.remove('show');
+    }
+    
+    saveState();
+};
+
+const handleSelectOption = (selectedOpt, btnElement) => {
+    if (state.isPaused) return; // Prevent clicking while paused
+
+    const qIndex = state.currentIndex;
+    const qData = state.questions[qIndex];
+    const isCorrect = selectedOpt === qData.a;
+    
+    // Update State
+    state.answers[qIndex] = { selected: selectedOpt, isCorrect };
+    if (isCorrect) state.score++;
+    
+    // Visuals & Audio
+    const allBtns = UI.optionsContainer.querySelectorAll('.option-btn');
+    allBtns.forEach(b => {
+        b.disabled = true;
+        if (b.innerText === qData.a) b.classList.add('correct');
+    });
+    
+    if (isCorrect) {
+        playCorrect();
+    } else {
+        btnElement.classList.add('wrong');
+        playWrong();
+    }
+    
+    UI.explanationText.innerText = qData.exp;
+    UI.explanationBox.classList.add('show');
+    
+    saveState();
+};
+
+// Timer Logic
+const startTimer = () => {
+    clearInterval(state.timerInterval);
+    updateTimerUI();
+    state.timerInterval = setInterval(() => {
+        if (!state.isPaused) {
+            state.timeLeft--;
+            updateTimerUI();
+            saveState();
+            
+            if (state.timeLeft <= 0) {
+                clearInterval(state.timerInterval);
+                submitQuiz();
+            }
+        }
+    }, 1000);
+};
+
+const updateTimerUI = () => {
+    UI.timeText.innerText = formatTime(state.timeLeft);
+    if (state.timeLeft < 300) { // last 5 mins
+        UI.timerBadge.style.color = 'var(--danger-color)';
+        UI.timerBadge.style.borderColor = 'var(--danger-color)';
+    }
+};
+
+const togglePause = () => {
+    state.isPaused = !state.isPaused;
+    if (state.isPaused) {
+        UI.timerBadge.classList.add('paused');
+        UI.questionText.innerText = "⏸ Quiz Paused";
+        UI.optionsContainer.style.opacity = '0.5';
+        UI.explanationBox.style.opacity = '0.5';
+        UI.btnPause.innerText = '▶️';
+    } else {
+        UI.timerBadge.classList.remove('paused');
+        UI.questionText.innerText = state.questions[state.currentIndex].q;
+        UI.optionsContainer.style.opacity = '1';
+        UI.explanationBox.style.opacity = '1';
+        UI.btnPause.innerText = '⏸';
+    }
+};
+
+// Next / Prev
+const changeQuestion = (dir) => {
+    if (state.isPaused) return;
+    const newIdx = state.currentIndex + dir;
+    if (newIdx >= 0 && newIdx < state.questions.length) {
+        state.currentIndex = newIdx;
+        renderQuestion();
+        updateQuote();
+    }
+};
+
+const updateQuote = () => {
+    UI.quoteText.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+};
+
+// Finish
+const submitQuiz = () => {
+    clearInterval(state.timerInterval);
+    clearState();
+    
+    const total = state.questions.length;
+    let finalScore = 0;
+    
+    // Recalculate score to be safe
+    Object.values(state.answers).forEach(ans => {
+        if(ans.isCorrect) finalScore++;
+    });
+    
+    const percentage = Math.round((finalScore / total) * 100);
+    
+    UI.scoreText.innerText = `${percentage}%`;
+    UI.scoreCircle.style.background = `conic-gradient(var(--accent-cyan) ${percentage}%, transparent 0%)`;
+    UI.correctCount.innerText = finalScore;
+    
+    if (percentage >= 90) {
+        UI.performanceMsg.innerText = "Expert Level!";
+        UI.performanceMsg.className = "performance-msg performance-expert";
+    } else if (percentage >= 70) {
+        UI.performanceMsg.innerText = "Strong Understanding";
+        UI.performanceMsg.className = "performance-msg performance-strong";
+    } else if (percentage >= 50) {
+        UI.performanceMsg.innerText = "Average (متوسط)";
+        UI.performanceMsg.className = "performance-msg performance-average";
+    } else {
+        UI.performanceMsg.innerText = "Needs Improvement";
+        UI.performanceMsg.className = "performance-msg performance-poor";
+    }
+    
+    showScreen('results');
+    generateReview();
+};
+
+// Review
+const generateReview = () => {
+    UI.reviewContainer.innerHTML = '';
+    state.questions.forEach((q, i) => {
+        const userAns = state.answers[i];
+        
+        const item = document.createElement('div');
+        item.className = 'review-item';
+        
+        let headerHtml = `<h3>${i + 1}. ${q.q}</h3>`;
+        
+        if (!userAns) {
+             headerHtml += `<p><span class="badge badge-wrong">Not Answered</span></p>`;
+             headerHtml += `<p><strong>Correct Answer:</strong> ${q.a}</p>`;
+        } else {
+            const isCorr = userAns.isCorrect;
+            headerHtml += `<p><span class="badge ${isCorr ? 'badge-correct' : 'badge-wrong'}">${isCorr ? 'Correct' : 'Incorrect'}</span></p>`;
+            headerHtml += `<p><strong>Your Answer:</strong> <span style="color: ${isCorr ? 'var(--success-color)' : 'var(--danger-color)'}">${userAns.selected}</span></p>`;
+            if (!isCorr) {
+                headerHtml += `<p><strong>Correct Answer:</strong> <span style="color: var(--success-color)">${q.a}</span></p>`;
+            }
+        }
+        
+        headerHtml += `<div style="margin-top:1rem; padding:1rem; background:rgba(255,255,255,0.05); border-left: 3px solid var(--accent-cyan); border-radius:4px;">
+            <small style="color:var(--text-secondary)"><strong>Explanation:</strong> ${q.exp}</small>
+        </div>`;
+        
+        item.innerHTML = headerHtml;
+        UI.reviewContainer.appendChild(item);
+    });
+};
+
+// Event Listeners
+UI.btnStart.addEventListener('click', () => startQuiz(false));
+UI.btnResume.addEventListener('click', () => startQuiz(true));
+UI.btnNext.addEventListener('click', () => changeQuestion(1));
+UI.btnPrev.addEventListener('click', () => changeQuestion(-1));
+UI.btnSubmit.addEventListener('click', () => {
+    if(confirm("Are you sure you want to submit the quiz? Unanswered questions will be marked incorrect.")) {
+        submitQuiz();
+    }
+});
+UI.btnPause.addEventListener('click', togglePause);
+UI.btnReview.addEventListener('click', () => showScreen('review'));
+UI.btnRetake.addEventListener('click', () => {
+    if(confirm("Start a new quiz?")) startQuiz(false);
+});
+UI.btnBackResults.addEventListener('click', () => showScreen('results'));
+
+// Toggles
+UI.btnTheme.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    state.isDarkMode = !document.body.classList.contains('light-mode');
+    localStorage.setItem('theme', state.isDarkMode ? 'dark' : 'light');
+});
+
+UI.btnSound.addEventListener('click', () => {
+    state.soundEnabled = !state.soundEnabled;
+    if(state.soundEnabled) {
+        UI.btnSound.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
+    } else {
+        UI.btnSound.innerHTML = `<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
+    }
+});
+
+// Run Init
+init();
+
+</script>
+</body>
+</html>
